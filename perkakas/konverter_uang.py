@@ -2,22 +2,22 @@ import streamlit as st
 import requests
 
 def get_kurs(dari, ke):
-    # Coba 1: Frankfurter (ECB - paling akurat)
+    # Coba 1: Frankfurter v2 - CUMA GANTI URL + NAMA PARAMETER
     try:
-        r = requests.get(f"https://api.frankfurter.app/latest?from={dari}&to={ke}", timeout=5)
+        r = requests.get(f"https://api.frankfurter.dev/v2/latest?base={dari}&symbols={ke}", timeout=5)
         data = r.json()
-        return data['rates'][ke], f"Live - Frankfurter / ECB - Tanggal: {data['date']}"
+        return data['rates'][ke], f"Live - Frankfurter v2 - Tanggal: {data['date']}"
     except:
         pass
 
-    # Coba 2: ExchangeRate-API (cadangan)
+    # Coba 2: Tetap cadangan
     try:
         r = requests.get(f"https://open.er-api.com/v6/latest/{dari}", timeout=5)
         data = r.json()
-        return data['rates'][ke], f"Live - ExchangeRate-API - Update: {data['time_last_update_utc']}"
+        return data['rates'][ke], f"Live - ExchangeRate-API"
     except:
         return None, "Gagal"
-
+    
 def tampilkan_konverter_uang():
     st.title("💱 Konverter Uang - Kurs Live")
     st.write("Kurs resmi dari Bank Sentral, bukan angka paten.")
