@@ -2,15 +2,19 @@ import streamlit as st
 import requests
 
 def get_kurs(dari, ke):
-    # Coba 1: Frankfurter v2 - CUMA GANTI URL + NAMA PARAMETER
+    # Coba 1: Frankfurter v2 - CARA BENAR
     try:
-        r = requests.get(f"https://api.frankfurter.dev/v2/latest?base={dari}&symbols={ke}", timeout=5)
+        # Contoh: https://api.frankfurter.dev/v2/rate/idr/usd
+        r = requests.get(f"https://api.frankfurter.dev/v2/rate/{dari.lower()}/{ke.lower()}", timeout=5)
         data = r.json()
-        return data['rates'][ke], f"Live - Frankfurter v2 - Tanggal: {data['date']}"
-    except:
+        # Di v2, kursnya langsung di 'rate', tidak ada 'rates'
+        kurs = data['rate']
+        return kurs, f"Live - Frankfurter v2 - Tanggal: {data['date']}"
+    except Exception as e:
+        print("Frankfurter gagal:", e)  # Buat debug di log, tidak tampil di web
         pass
 
-    # Coba 2: Tetap cadangan
+    # Coba 2: ExchangeRate-API - Cadangan
     try:
         r = requests.get(f"https://open.er-api.com/v6/latest/{dari}", timeout=5)
         data = r.json()
