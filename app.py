@@ -1,21 +1,14 @@
-# app.py - File Utama, hanya untuk menu
 import streamlit as st
-from kalkulator_rumus import tampilkan_kalkulator
-from konverter import tampilkan_konverter
+from cabang.aritmatika import tampilkan_aritmatika
+from cabang.konverter import tampilkan_konverter
 
-st.set_page_config(page_title="RumusKilat - Kalkulator Matematika & Konverter Satuan", page_icon="⚡", layout="centered")
+st.sidebar.title("RumusKilat ⚡")
+menu = st.sidebar.selectbox("Pilih Cabang:", ["1. Aritmatika", "2. Geometri", "3. Konverter"])
 
-st.title("RumusKilat")
-st.markdown("Kalkulator matematika dan konverter satuan. Dilengkapi penjelasan rumus dan langkah perhitungan.")
-st.divider()
-
-kategori = st.radio("Kategori", ["Kalkulator Rumus", "Konverter Satuan"], horizontal=True)
-st.divider()
-
-if kategori == "Kalkulator Rumus":
-    tampilkan_kalkulator()
-elif kategori == "Konverter Satuan":
+if menu == "1. Aritmatika":
+    tampilkan_aritmatika()
+elif menu == "3. Konverter":
     tampilkan_konverter()
-
-st.divider()
-st.caption("© 2026 RumusKilat. Kalkulator Matematika & Konverter Satuan.")
+else:
+    st.title("🚧 Masih Dibangun")
+    st.write("Geometri lagi dibikin, sabar ya bro.")
