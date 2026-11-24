@@ -30,7 +30,7 @@ OPERASI = {
     "Pangkat (^)": (pangkat, "^"),
 }
 
-def tampilkan():
+def tampilkan_aritmatika():
     st.header("1. Aritmatika - Hitung Dasar")
     st.write("Tambah, Kurang, Kali, Bagi. Pondasi semua matematika.")
 
