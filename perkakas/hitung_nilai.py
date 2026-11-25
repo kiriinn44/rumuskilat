@@ -32,13 +32,35 @@ def tampilkan_hitung_nilai():
             except:
                 st.error("Formatnya salah bro, pakai koma ya. Contoh: 70, 85, 90")
 
-    # TAB 2: NILAI AKHIR - BOBOT BISA DIATUR
+    # TAB 2: NILAI AKHIR - BOBOT FLEKSIBEL + PRESET
     with tab2:
         st.subheader("Nilai Akhir (Bobot Fleksibel)")
-        st.write("Setiap sekolah beda kebijakan bro. Atur bobotnya sesuai sekolah lu, totalnya harus 100% ya.")
+        st.write("Setiap sekolah beda kebijakan bro. Pilih paket sekolah lu, atau atur sendiri.")
 
-        # 1. Atur Bobot Dulu
-        st.markdown("**1. Atur Bobotnya Dulu:**")
+        # TOMBOL PRESET - INI YANG BARU
+        st.markdown("**Pilih Paket Sekolah Lu (Klik Sekali Saja):**")
+        col_p1, col_p2, col_p3 = st.columns(3)
+        with col_p1:
+            if st.button("Umum: 30-30-40", key="preset_1"):
+                st.session_state["bobot_tugas"] = 30
+                st.session_state["bobot_uts"] = 30
+                st.session_state["bobot_uas"] = 40
+                st.rerun()
+        with col_p2:
+            if st.button("UAS Berat: 20-30-50", key="preset_2"):
+                st.session_state["bobot_tugas"] = 20
+                st.session_state["bobot_uts"] = 30
+                st.session_state["bobot_uas"] = 50
+                st.rerun()
+        with col_p3:
+            if st.button("Tugas Berat: 40-20-40", key="preset_3"):
+                st.session_state["bobot_tugas"] = 40
+                st.session_state["bobot_uts"] = 20
+                st.session_state["bobot_uas"] = 40
+                st.rerun()
+
+        # SLIDER BOBOT
+        st.markdown("**Atau Atur Sendiri Di Sini:**")
         col_b1, col_b2, col_b3 = st.columns(3)
         with col_b1:
             bobot_tugas = st.slider("Bobot Tugas (%)", 0, 100, 30, key="bobot_tugas")
@@ -51,12 +73,12 @@ def tampilkan_hitung_nilai():
         st.write(f"Total Bobot: **{total_bobot}%**")
 
         if total_bobot != 100:
-            st.error(f"Total bobot lu masih {total_bobot}%, harus 100% bro! Geser-geser dulu slider di atas sampai jadi 100%.")
+            st.error(f"Total bobot lu masih {total_bobot}%, harus 100% bro! Klik tombol paket di atas biar langsung pas 100%.")
         else:
             st.success("Total bobot sudah 100%, mantap! Lanjut isi nilainya di bawah.")
 
-        # 2. Isi Nilainya
-        st.markdown("**2. Isi Nilainya:**")
+        # ISI NILAI
+        st.markdown("**Isi Nilainya:**")
         col1, col2, col3 = st.columns(3)
         with col1:
             tugas = st.number_input(f"Nilai Tugas ({bobot_tugas}%)", 0, 100, 85, key="tugas")
@@ -71,14 +93,12 @@ def tampilkan_hitung_nilai():
             else:
                 nilai_akhir = (tugas * bobot_tugas/100) + (uts * bobot_uts/100) + (uas * bobot_uas/100)
                 st.metric("Nilai Akhir Lu", f"{nilai_akhir:.2f}")
-
                 if nilai_akhir >= 85:
                     st.success("Nilai Akhir A! Lu aman, bisa santai dikit.")
                 elif nilai_akhir >= 70:
                     st.warning("Nilai Akhir B / C. UAS-nya naikin dikit lagi bro.")
                 else:
                     st.error("Nilai Akhir di bawah 70. Harus remedial bro, semangat!")
-
                 with st.expander("Lihat cara ngitungnya"):
                     st.write(f"= ({tugas} x {bobot_tugas}%) + ({uts} x {bobot_uts}%) + ({uas} x {bobot_uas}%)")
                     st.write(f"= {tugas*bobot_tugas/100:.1f} + {uts*bobot_uts/100:.1f} + {uas*bobot_uas/100:.1f} = **{nilai_akhir:.2f}**")
