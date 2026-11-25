@@ -32,30 +32,53 @@ def tampilkan_hitung_nilai():
             except:
                 st.error("Formatnya salah bro, pakai koma ya. Contoh: 70, 85, 90")
 
-    # TAB 2: NILAI AKHIR
+    # TAB 2: NILAI AKHIR - BOBOT BISA DIATUR
     with tab2:
-        st.subheader("Nilai Akhir (Tugas + UTS + UAS)")
-        st.write("Rumus sekolah yang biasa dipakai: Tugas 30% + UTS 30% + UAS 40%")
+        st.subheader("Nilai Akhir (Bobot Fleksibel)")
+        st.write("Setiap sekolah beda kebijakan bro. Atur bobotnya sesuai sekolah lu, totalnya harus 100% ya.")
 
+        # 1. Atur Bobot Dulu
+        st.markdown("**1. Atur Bobotnya Dulu:**")
+        col_b1, col_b2, col_b3 = st.columns(3)
+        with col_b1:
+            bobot_tugas = st.slider("Bobot Tugas (%)", 0, 100, 30, key="bobot_tugas")
+        with col_b2:
+            bobot_uts = st.slider("Bobot UTS (%)", 0, 100, 30, key="bobot_uts")
+        with col_b3:
+            bobot_uas = st.slider("Bobot UAS (%)", 0, 100, 40, key="bobot_uas")
+
+        total_bobot = bobot_tugas + bobot_uts + bobot_uas
+        st.write(f"Total Bobot: **{total_bobot}%**")
+
+        if total_bobot != 100:
+            st.error(f"Total bobot lu masih {total_bobot}%, harus 100% bro! Geser-geser dulu slider di atas sampai jadi 100%.")
+        else:
+            st.success("Total bobot sudah 100%, mantap! Lanjut isi nilainya di bawah.")
+
+        # 2. Isi Nilainya
+        st.markdown("**2. Isi Nilainya:**")
         col1, col2, col3 = st.columns(3)
         with col1:
-            tugas = st.number_input("Nilai Tugas (30%)", 0, 100, 85, key="tugas")
+            tugas = st.number_input(f"Nilai Tugas ({bobot_tugas}%)", 0, 100, 85, key="tugas")
         with col2:
-            uts = st.number_input("Nilai UTS (30%)", 0, 100, 80, key="uts")
+            uts = st.number_input(f"Nilai UTS ({bobot_uts}%)", 0, 100, 80, key="uts")
         with col3:
-            uas = st.number_input("Nilai UAS (40%)", 0, 100, 90, key="uas")
+            uas = st.number_input(f"Nilai UAS ({bobot_uas}%)", 0, 100, 90, key="uas")
 
         if st.button("Hitung Nilai Akhir", key="btn_akhir"):
-            nilai_akhir = (tugas * 0.30) + (uts * 0.30) + (uas * 0.40)
-            st.metric("Nilai Akhir Lu", f"{nilai_akhir:.2f}")
-
-            if nilai_akhir >= 85:
-                st.success("Nilai Akhir A! Lu aman, bisa santai dikit.")
-            elif nilai_akhir >= 70:
-                st.warning("Nilai Akhir B / C. UAS-nya naikin dikit lagi bro.")
+            if total_bobot != 100:
+                st.error("Belum bisa dihitung bro, total bobotnya harus 100% dulu.")
             else:
-                st.error("Nilai Akhir di bawah 70. Harus remedial bro, semangat!")
+                nilai_akhir = (tugas * bobot_tugas/100) + (uts * bobot_uts/100) + (uas * bobot_uas/100)
+                st.metric("Nilai Akhir Lu", f"{nilai_akhir:.2f}")
 
-            with st.expander("Lihat cara ngitungnya"):
-                st.write(f"= ({tugas} x 30%) + ({uts} x 30%) + ({uas} x 40%)")
-                st.write(f"= {tugas*0.30:.1f} + {uts*0.30:.1f} + {uas*0.40:.1f} = **{nilai_akhir:.2f}**")
+                if nilai_akhir >= 85:
+                    st.success("Nilai Akhir A! Lu aman, bisa santai dikit.")
+                elif nilai_akhir >= 70:
+                    st.warning("Nilai Akhir B / C. UAS-nya naikin dikit lagi bro.")
+                else:
+                    st.error("Nilai Akhir di bawah 70. Harus remedial bro, semangat!")
+
+                with st.expander("Lihat cara ngitungnya"):
+                    st.write(f"= ({tugas} x {bobot_tugas}%) + ({uts} x {bobot_uts}%) + ({uas} x {bobot_uas}%)")
+                    st.write(f"= {tugas*bobot_tugas/100:.1f} + {uts*bobot_uts/100:.1f} + {uas*bobot_uas/100:.1f} = **{nilai_akhir:.2f}**")
