@@ -4,6 +4,7 @@ from cabang.geometri import tampilkan_geometri
 from perkakas.konverter import tampilkan_konverter
 from perkakas.konverter_uang import tampilkan_konverter_uang
 from perkakas.kalkulator_diskon import tampilkan_kalkulator_diskon
+from perkakas.hitung_nilai import tampilkan_hitung_nilai
 
 # ===== MENU 1: RUMUSKILAT - CABANG MATEMATIKA =====
 st.sidebar.title("RumusKilat ⚡")
@@ -25,7 +26,8 @@ menu_perkakas = st.sidebar.selectbox("Pilih Perkakas:", [
     "-- Pilih --",
     "1. Konverter Satuan",
     "2. Konverter Uang",
-    "3. Kalkulator Diskon"
+    "3. Kalkulator Diskon",
+    "4. Hitung Nilai"
 ])
 
 # ===== LOGIKA: Mana yang dipilih, itu yang tampil =====
@@ -37,6 +39,8 @@ elif menu_perkakas == "2. Konverter Uang":
     tampilkan_konverter_uang()
 elif menu_perkakas == "3. Kalkulator Diskon":
     tampilkan_kalkulator_diskon()
+elif menu_perkakas == "4. Hitung Nilai":
+    tampilkan_hitung_nilai()
 
 elif menu_rumus == "1. Aritmatika":
     tampilkan_aritmatika()
