@@ -2,9 +2,9 @@ import streamlit as st
 
 def tampilkan_hitung_nilai():
     st.header("🎓 Hitung Nilai")
-    st.write("Hitung rata-rata nilai dan patungan bareng teman, tanpa ribet.")
+    st.write("Cek rata-rata lu sekarang, terus kejar target lu sampai tercapai!")
 
-    tab1, tab2 = st.tabs(["Hitung Rata-rata", "Kalkulator Patungan"])
+    tab1, tab2 = st.tabs(["Hitung Rata-rata", "Kejar Target Nilai"])
 
     # TAB 1: RATA-RATA (TETAP)
     with tab1:
@@ -32,48 +32,58 @@ def tampilkan_hitung_nilai():
             except:
                 st.error("Formatnya salah bro, pakai koma ya. Contoh: 70, 85, 90")
 
-    # TAB 2: PATUNGAN (YANG BARU)
+    # TAB 2: KEJAR TARGET (YANG BARU, GANTIIN PATUNGAN)
     with tab2:
-        st.subheader("🍕 Kalkulator Patungan / Bagi Rata")
-        st.write("Makan bareng, beli kado patungan, atau patungan bensin. Biar nggak ada yang merasa dirugikan.")
+        st.subheader("🎯 Kejar Target Nilai")
+        st.write("Rata-rata lu masih kurang? Hitung di sini, ulangan besok lu harus dapat berapa biar target lu tercapai.")
 
-        total = st.number_input("Total yang harus dibayar (Rp)", 0, 10000000, 150000, step=1000, key="patungan_total")
-        jumlah_orang = st.number_input("Berapa orang yang patungan?", 1, 100, 5, key="patungan_orang")
+        nilai_lama = st.text_input("Nilai-nilai lu yang sudah ada:", "70, 75, 80", key="input_target")
+        target = st.number_input("Target rata-rata yang lu mau:", 0, 100, 85, key="target_rata")
+        sisa_ulangan = st.number_input("Sisa ulangan yang masih ada:", 1, 10, 1, key="sisa_ulangan")
 
-        st.markdown("---")
+        if st.button("Hitung Nilai Yang Harus Gw Kejar", key="btn_target"):
+            try:
+                daftar = [float(x.strip()) for x in nilai_lama.split(",") if x.strip() != ""]
+                if len(daftar) == 0:
+                    st.warning("Isi dulu nilai lama lu bro.")
+                else:
+                    jumlah_lama = len(daftar)
+                    total_lama = sum(daftar)
+                    rata_sekarang = total_lama / jumlah_lama
 
-        # Opsi: Ada yang sudah bayar duluan?
-        ada_yang_bayar = st.checkbox("Ada yang sudah bayar duluan / nombokin?", key="cek_nombok")
+                    st.write(f"Rata-rata lu sekarang: **{rata_sekarang:.2f}** dari {jumlah_lama} ulangan")
+                    st.write(f"Target lu: **{target}**")
 
-        sudah_bayar = 0
-        if ada_yang_bayar:
-            sudah_bayar = st.number_input("Dia sudah bayar berapa? (Rp)", 0, 10000000, 50000, step=1000, key="sudah_bayar")
-            st.info(f"Berarti sisanya yang belum dibayar: Rp {total - sudah_bayar:,}")
+                    # RUMUSNYA DI SINI
+                    # Total yang dibutuhkan = Target x (Jumlah Lama + Sisa)
+                    # Nilai yang harus dikejar = Total Dibutuhkan - Total Lama
+                    total_dibutuhkan = target * (jumlah_lama + sisa_ulangan)
+                    total_yang_harus_dikejar = total_dibutuhkan - total_lama
+                    perlu_per_ulangan = total_yang_harus_dikejar / sisa_ulangan
 
-        if st.button("Hitung Patungan", key="btn_patungan"):
-            if jumlah_orang <= 0:
-                st.error("Jumlah orangnya harus lebih dari 0 bro.")
-            elif sudah_bayar > total:
-                st.error("Yang sudah dibayar kok lebih gede dari totalnya bro? Cek lagi.")
-            else:
-                sisa = total - sudah_bayar
-                per_orang = sisa / jumlah_orang
+                    st.markdown("---")
 
-                st.success(f"Setiap orang harus bayar: **Rp {per_orang:,.0f}**")
-                st.write(f"Total: Rp {total:,} dibagi {jumlah_orang} orang")
-
-                if ada_yang_bayar and sudah_bayar > 0:
-                    # Kalau yang nombokin juga ikut patungan, dia harus dapat kembalian / bayar kurang
-                    jatah_dia = per_orang
-                    selisih = sudah_bayar - jatah_dia
-                    if selisih > 0:
-                        st.write(f"Yang sudah nombokin Rp {sudah_bayar:,} itu sebenarnya jatahnya cuma Rp {jatah_dia:,.0f}. Berarti teman-temannya harus ganti ke dia **Rp {selisih:,.0f}**.")
-                    elif selisih < 0:
-                        st.write(f"Yang sudah bayar Rp {sudah_bayar:,} masih kurang bayar **Rp {abs(selisih):,.0f}**.")
+                    if perlu_per_ulangan > 100:
+                        st.error(f"Waduh bro, lu harus dapat rata-rata **{perlu_per_ulangan:.2f}** di {sisa_ulangan} ulangan sisa. Itu sudah di atas 100, mustahil!")
+                        st.write("Solusinya: Turunin dikit target lu, atau minta ulangan tambahan ke guru lu. Jangan nyerah!")
+                    elif perlu_per_ulangan <= 0:
+                        st.balloons()
+                        st.success(f"Selamat bro! Lu sudah lolos target {target}! Bahkan kalau ulangan besok lu dapat 0 pun, rata-rata lu tetap di atas target.")
+                    elif perlu_per_ulangan > rata_sekarang:
+                        st.success(f"Lu harus dapat rata-rata **{perlu_per_ulangan:.2f}** di {sisa_ulangan} ulangan yang tersisa!")
+                        st.write(f"Berarti lu harus naik **{perlu_per_ulangan - rata_sekarang:.2f} poin** dari rata-rata lu sekarang. Berat, tapi masih bisa bro!")
+                        st.progress(int(perlu_per_ulangan))
+                        if perlu_per_ulangan >= 90:
+                            st.warning("Ini berat banget bro, tapi bukan mustahil. Fokus belajar 1 bab yang paling sering keluar di ulangan!")
+                        else:
+                            st.info("Masih masuk akal! Lu cuma perlu lebih teliti dikit lagi pas ngerjain.")
                     else:
-                        st.write("Pas! Yang nombokin sudah bayar sesuai jatahnya.")
+                        st.success(f"Gampang bro! Lu cuma perlu dapat **{perlu_per_ulangan:.2f}** saja di ulangan sisa, itu di bawah rata-rata lu sekarang. Santai, lu pasti bisa!")
 
-                # Rincian biar jelas
-                with st.expander("Lihat rincian hitungnya"):
-                    st.write(f"Total - Sudah Bayar = {total:,} - {sudah_bayar:,} = {sisa:,}")
-                    st.write(f"Sisa / Jumlah Orang = {sisa:,} / {jumlah_orang} = **{per_orang:,.0f}**")
+                    with st.expander("Lihat cara ngitungnya"):
+                        st.write(f"Total nilai lu sekarang = {total_lama:.0f}")
+                        st.write(f"Total nilai yang dibutuhkan biar rata-rata {target} = {target} x ({jumlah_lama} + {sisa_ulangan}) = {total_dibutuhkan:.0f}")
+                        st.write(f"Yang masih harus lu kejar = {total_dibutuhkan:.0f} - {total_lama:.0f} = {total_yang_harus_dikejar:.0f}")
+                        st.write(f"Dibagi {sisa_ulangan} ulangan sisa = **{perlu_per_ulangan:.2f}** per ulangan")
+            except:
+                st.error("Formatnya salah bro, pakai koma ya. Contoh: 70, 75, 80")
